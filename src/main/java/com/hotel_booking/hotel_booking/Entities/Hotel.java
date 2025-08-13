@@ -23,7 +23,6 @@ public class Hotel {
     private String description;
     private double rating;
     private String contacts;
-//    @Column(columnDefinition = "BOOLEAN DEFAULT true")
     private boolean isActive = true;
     private int total_person;
 

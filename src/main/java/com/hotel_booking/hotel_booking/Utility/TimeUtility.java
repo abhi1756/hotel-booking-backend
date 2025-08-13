@@ -28,7 +28,7 @@ public class TimeUtility {
         this.roomRepository = roomRepository;
     }
 
-    @Scheduled(cron = "0 * * * * *") // runs every 1 minute
+    @Scheduled(cron = "0 * * * * *")
     @Transactional
     public void releaseExpiredBookings() {
         List<Booking> expiredBookings = bookingRepository.findByEndTime(LocalDate.now());

@@ -19,7 +19,7 @@ public class BookingController {
         return bookingServices.bookroom(booking);
     }
 
-    @GetMapping("/allbooking")
+    @GetMapping("/allBooking")
     public ResponseEntity<?> getData(){
         return bookingServices.getBookingData();
     }

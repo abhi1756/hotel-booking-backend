@@ -43,7 +43,13 @@ public class HotelService {
             return ResponseEntity
                     .status(HttpStatus.OK) // 200
                     .body(updatedHotel);
-        } catch (Exception e) {
+        }
+        catch (RuntimeException e){
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN) // 500
+                    .body("Unauthorised Request: " + e.getMessage());
+        }
+        catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR) // 500
                     .body("Error while deactivating hotel: " + e.getMessage());

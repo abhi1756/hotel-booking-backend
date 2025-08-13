@@ -19,15 +19,19 @@ public class RoomController {
     private RoomService roomService;
 
     @PostMapping("/addRooms")
-    public ResponseEntity<?> save(@RequestBody RoomBookingDTO room){
+    public ResponseEntity<?> save(@RequestBody RoomBookingDTO room) {
         return roomService.saveRoom(room);
     }
+
     @GetMapping("/{id}")
-    public ResponseEntity<?> getRoom(@PathVariable int id){
-        try{
+    public ResponseEntity<?> getRoom(@PathVariable int id) {
+        try {
             List<Room_no> res = roomService.getRooms(id);
+            if (res.isEmpty()){
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No Rooms Found");
+            }
             return ResponseEntity.status(HttpStatus.OK).body(res);
-        }catch(Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
