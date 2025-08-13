@@ -1,8 +1,7 @@
-package com.hotel_booking.hotel_booking.Services;
+package com.hotel_booking.hotel_booking.SecurityConfig;
 
 import com.hotel_booking.hotel_booking.Entities.User;
 import com.hotel_booking.hotel_booking.Repository.UserRepository;
-import com.hotel_booking.hotel_booking.SecurityConfig.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

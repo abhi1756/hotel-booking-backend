@@ -2,8 +2,10 @@ package com.hotel_booking.hotel_booking.Services;
 
 import com.hotel_booking.hotel_booking.DTO.BookingDTO;
 import com.hotel_booking.hotel_booking.Entities.Booking;
+import com.hotel_booking.hotel_booking.Entities.Hotel;
 import com.hotel_booking.hotel_booking.Entities.Room_no;
 import com.hotel_booking.hotel_booking.Repository.BookingRepository;
+import com.hotel_booking.hotel_booking.Repository.HotelRepository;
 import com.hotel_booking.hotel_booking.Repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,9 +29,21 @@ public class BookingServices {
     @Autowired
     private RoomService roomService;
 
+    @Autowired
+    private HotelRepository hotelRepository;
+
     public ResponseEntity<?> bookroom(BookingDTO userdata) {
         try {
+            Optional<Hotel> data = hotelRepository.findById(userdata.getHotel_id());
+            if (!data.get().isActive()){
+                return ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .body("Hotel not found with ID: " + userdata.getHotel_id());
+            }
             List<Room_no> allRooms = roomService.getRooms(userdata.getHotel_id());
+            if (allRooms.isEmpty()){
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No Rooms Found");
+            }
             List<String> requestedRoomIds = userdata.getRooms();
             List<String> bookedRooms = new ArrayList<>();
             double total_price = 0;
@@ -135,11 +149,16 @@ public class BookingServices {
 
             int hotelId = userData.get().getHotel_id();
             List<Room_no> allRooms = roomService.getRooms(hotelId);
+            if (allRooms.isEmpty()){
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No Rooms Found");
+            }
             List<String> rooms = userData.get().getRooms();
 
+            double refundAmount = 0;
             for (Room_no room : allRooms) {
                 if (rooms.contains(room.getRoom_id()) && room.isBooked()) {
                     room.setBooked(false);
+                    refundAmount += room.getPrice();
                     roomRepository.save(room);
                 }
             }
@@ -148,7 +167,7 @@ public class BookingServices {
 
             return ResponseEntity
                     .status(HttpStatus.OK) // 200
-                    .body("Booking cancelled successfully for ID: " + id);
+                    .body("Booking cancelled successfully for ID: " + id + "Your Refund Amount is " + refundAmount);
 
         } catch (RuntimeException e) {
             return ResponseEntity
@@ -172,20 +191,29 @@ public class BookingServices {
             }
 
             int hotelId = userData.get().getHotel_id();
+            double totalAmount = userData.get().getPrice();
+
+            double refundAmount = 0;
 
             List<Room_no> allRooms = roomService.getRooms(hotelId);
+            if (allRooms.isEmpty()){
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No Rooms Found");
+            }
 
             for (Room_no room : allRooms) {
                 if (data.getRooms().contains(room.getRoom_id()) && room.isBooked()) {
                     room.setBooked(false);
                     userData.get().getRooms().remove(room.getRoom_id());
                     data.getRooms().remove(room.getRoom_id());
+                    refundAmount += room.getPrice();
+                    totalAmount -= room.getPrice();
                     roomRepository.save(room);
                 }
 
                 if (userData.get().getRooms().isEmpty()) {
                     bookingRepository.deleteById(data.getId());
                 }else {
+                    userData.get().setPrice(totalAmount);
                     bookingRepository.save(userData.get());
                 }
 
@@ -198,7 +226,7 @@ public class BookingServices {
 
             return ResponseEntity
                     .status(HttpStatus.OK) // 200
-                    .body("Booking cancelled successfully for ID: " + data.getId());
+                    .body("Booking cancelled successfully for ID: " + data.getId() + "Your Refund Amount is " + refundAmount);
 
         } catch (RuntimeException e) {
             return ResponseEntity

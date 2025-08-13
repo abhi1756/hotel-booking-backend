@@ -22,6 +22,11 @@ public class RoomService {
     public ResponseEntity<?> saveRoom(RoomBookingDTO roomDTO) {
         try {
             Optional<Hotel> data = hotelRepository.findById(roomDTO.getHotel_id());
+            if (!data.get().isActive()){
+                return ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .body("Hotel not found with ID: " + roomDTO.getHotel_id());
+            }
             if (data.isEmpty()) {
                 return ResponseEntity
                         .status(HttpStatus.NOT_FOUND)
