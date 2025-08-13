@@ -1,5 +1,6 @@
 package com.hotel_booking.hotel_booking.Controller;
 
+import com.hotel_booking.hotel_booking.DTO.UserDTO;
 import com.hotel_booking.hotel_booking.Entities.User;
 import com.hotel_booking.hotel_booking.Services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ public class UserController {
     private UserServices userServices;
 
     @PostMapping
-    public String save(@RequestBody User user) {
+    public String save(@RequestBody UserDTO user) {
         return userServices.saveuser(user);
     }
 

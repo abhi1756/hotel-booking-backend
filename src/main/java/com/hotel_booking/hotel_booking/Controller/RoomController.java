@@ -18,7 +18,7 @@ public class RoomController {
     @Autowired
     private RoomService roomService;
 
-    @PostMapping
+    @PostMapping("/addRooms")
     public ResponseEntity<?> save(@RequestBody RoomBookingDTO room){
         return roomService.saveRoom(room);
     }

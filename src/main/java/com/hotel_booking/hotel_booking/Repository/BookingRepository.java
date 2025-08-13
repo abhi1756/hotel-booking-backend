@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
     List<Booking> findByEndTime(LocalDate now);
+    List<Booking> findByUserEmail(String useremail);
 }

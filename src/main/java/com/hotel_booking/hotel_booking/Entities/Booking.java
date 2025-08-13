@@ -17,7 +17,7 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private int hotel_id;
-    private String user_email;
+    private String userEmail;
     private double price;
 
     private LocalDate startTime;

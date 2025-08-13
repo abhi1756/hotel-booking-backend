@@ -22,4 +22,11 @@ public class User {
     private String password;
 
     private boolean isAdmin;
+
+//    public void setIsAdmin(boolean isAdmin){
+//        this.isAdmin = isAdmin;
+//    }
+//    public boolean getIsAdmin(){
+//       return isAdmin;
+//    }
 }

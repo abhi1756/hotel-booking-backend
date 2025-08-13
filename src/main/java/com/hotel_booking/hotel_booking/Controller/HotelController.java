@@ -14,12 +14,12 @@ public class HotelController {
     @Autowired
     public HotelService hotelService;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<?> createHotel(@RequestBody Hotel hotel){
         return hotelService.createHotel(hotel);
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable int id){
         return hotelService.deactivateHotel(id);
     }

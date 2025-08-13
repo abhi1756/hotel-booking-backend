@@ -8,6 +8,8 @@ import com.hotel_booking.hotel_booking.Repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +50,9 @@ public class BookingServices {
 
             Booking booking = new Booking();
             booking.setHotel_id(userdata.getHotel_id());
-            booking.setUser_email(userdata.getUser_email());
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+            booking.setUserEmail(username);
             booking.setPrice(total_price);
             booking.setRooms(bookedRooms);
             booking.setStartTime(userdata.getStartDate());
@@ -80,6 +84,28 @@ public class BookingServices {
     public ResponseEntity<?> getBookingData() {
         try {
             List<Booking> bookings = bookingRepository.findAll();
+
+            if (bookings.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT) // 204
+                        .body("No bookings found");
+            }
+
+            return ResponseEntity.status(HttpStatus.OK) // 200
+                    .body(bookings);
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) // 500
+                    .body("Failed to fetch bookings: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+
+    public ResponseEntity<?> getUserBookingData() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+            List<Booking> bookings = bookingRepository.findByUserEmail(username);
 
             if (bookings.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT) // 204
